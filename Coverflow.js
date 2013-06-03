@@ -35,6 +35,8 @@ Ext.define('Ux.Coverflow',{
         //private
         itemBaseCls: 'ux-cover-item',
 
+        expandedAdjacent: false,
+
         itemWidth: 380,
 
         /**
@@ -43,7 +45,9 @@ Ext.define('Ux.Coverflow',{
          * displayed in a loading div and the view's contents will be cleared while loading, otherwise the view's
          * contents will continue to display normally until the new data is loaded and the contents are replaced.
          */
-        loadingText: 'Loading...'
+        loadingText: 'Loading...',
+
+        preventAdjacentExpand: false
 
     },    
     decreaseFactor: Ext.os.is('iOS') ? 0.1 : 0.2,
@@ -54,11 +58,12 @@ Ext.define('Ux.Coverflow',{
 
     carouselSize: 7,
 
-    expandLateral: true,
-
     storeEventHooks: {
         beforeload: 'onBeforeLoad',
         load: 'onLoad'
+    },
+    constructor: function() {
+        this.callParent(arguments);
     },
     //override
     initialize: function(){
@@ -95,9 +100,29 @@ Ext.define('Ux.Coverflow',{
                 }
             }
         }
-
         return store;
     },
+    applyExpandedAdjacent: function(expanded){
+        var me = this,
+            oldExpandedAdjacent = me._expandedAdjacent;
+
+        if(!me.getPreventAdjacentExpand()){
+            if(me.element.getWidth() < me.minVisibleWidth){
+                return false;
+            } 
+            return expanded === false ? expanded : true;
+        }
+
+        // if is default value return it
+        if(!Ext.isDefined(oldExpandedAdjacent)){
+            return expanded;
+        }
+    },
+    updateExpandedAdjacent: function(expanded) {
+        if(this.isPainted())
+            expanded ? this.expandAdjacent() :  this.collapseAdjacent();
+    },
+
     updateStore: function(newStore, oldStore) {
         var me = this,
             bindEvents = Ext.apply({}, me.storeEventHooks, { scope: me }),
@@ -148,7 +173,7 @@ Ext.define('Ux.Coverflow',{
 
         if(!el){
             el = this.callParent();
-            console.log("items added");
+
             el.on({
                 singletap: 'onItemSingleTap',
                 delegate: '.ux-cover-item',
@@ -185,10 +210,7 @@ Ext.define('Ux.Coverflow',{
             "-webkit-timing-function": " ",
         });
 
-
-        if(this.expandLateral){
-            this.collapseLateralItems();
-        }
+        this.setExpandedAdjacent(false);
     },
     onDrag: function(e){
         var delta = Math.round(e.deltaX*this.decreaseFactor),
@@ -232,8 +254,7 @@ Ext.define('Ux.Coverflow',{
         idx = me.checkFrontIdx(idx);
         me.lastFrontIdx = idx;
 
-        if(me.expandLateral)
-            me.expandLateralItems();
+        this.setExpandedAdjacent(true);
     },
     onItemSingleTap: function(e) {
         var me = this,
@@ -257,6 +278,8 @@ Ext.define('Ux.Coverflow',{
         this.element.clearListeners();
     },
     onOrientationChange: function(){
+        if(this.isPainted());
+            this.setExpandedAdjacent();
     },
     doRefresh: function() {
         this.onStoreClear();
@@ -277,7 +300,7 @@ Ext.define('Ux.Coverflow',{
                 me.carouselSize = totalCount;
             else{
                 if(me.carouselSize > 10)
-                    me.expandLateral = false;
+                    me.setExpandAdjacent(false);
             }
             
             function pushData(rec){
@@ -372,7 +395,7 @@ Ext.define('Ux.Coverflow',{
                 me.innerHtmlElement.setStyle({webkitTransform: 'translateZ(-' + me.radius + 'px) ' + 'rotateY(' + me.rotation + 'deg)'})
 
                 // Can we start with previous and next items expanded ?
-                if(me.expandLateral){
+                if(! me.getPreventAdjacentExpand()){
                     angle = me.theta*0.3;
 
                     var c = Math.sin(angle*radiansCoef)*itemWidth/2,
@@ -380,11 +403,9 @@ Ext.define('Ux.Coverflow',{
 
                     me.expandX = itemWidth - Math.sqrt(ip*ip-c*c) + 5;
 
-                    if(me.element.getWidth() < me.expandX*2+me.getItemWidth()){
-                        me.expandLateral = false;
-                    }else{
-                        me.expandLateralItems();
-                    }
+                    me.minVisibleWidth = me.expandX*2 + itemWidth;
+
+                    this.setExpandedAdjacent(true);
                 }
 
             }else
@@ -478,11 +499,13 @@ Ext.define('Ux.Coverflow',{
 
         this.element.clearListeners();
 
+        Ext.Viewport.un('orientationchange', me.onOrientationChange, me);
+
         this.callParent(arguments);
 
         this.setStore(null);
     },
-    collapseLateralItems: function(){
+    collapseAdjacent: function(){
         var me = this,
             next,prev,items,
             lastFrontIdx = me.lastFrontIdx;
@@ -507,7 +530,7 @@ Ext.define('Ux.Coverflow',{
             });
         } 
     },
-    expandLateralItems: function(){
+    expandAdjacent: function(){
         var me = this,
             angle,next,prev,items,
             expandX,
@@ -535,6 +558,6 @@ Ext.define('Ux.Coverflow',{
             Ext.get(next || items[lastFrontIdx + 1]).setStyle({
                webkitTransform: 'rotateY(' +  angle + 'deg)' + 'translateZ(' + me.radius + 'px)'+ 'translateX('+me.expandX+'px)'
             });
-        } 
+        }
     }
 });
