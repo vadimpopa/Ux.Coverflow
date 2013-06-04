@@ -10,9 +10,9 @@ Features:
 1. Infinite:
 	There aren't any limits in dragging, starts from begging if all were shown.
 
-2. Buffering
+2. Buffering:
 	If total number of items to show is greater then the specified carousel size(config) then buffering is eanbled. Only one item at time is buffered, this happens when the index of up front item is changed while dragging.
-	
+
 3. Different carousel sizes / different views:
 	- 1, 2 items: flat display at center.
 	- 3 items: coverflow mode, dragging is disabled.
