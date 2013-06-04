@@ -40,7 +40,6 @@ $cover-text-color: #fff;
 			@include transition-duration(0.5s);
 			@include transition-timing-function(easy-out);
 			position: absolute;
-			overflow: hidden;
 			width: inherit;
 			height: inherit;
 			-webkit-backface-visibility : hidden;
