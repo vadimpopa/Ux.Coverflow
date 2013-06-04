@@ -13,7 +13,7 @@ Features:
 	There aren't any limits in dragging, starts from beginning if all were shown.
 
 2. Buffering:
-	If total number of items to show is greater then the specified carousel size(config) then buffering is eanbled. Only one item at time is buffered, this happens when the index of up front item is changed while dragging.
+	Buffering is eanbled if total number of items to show is greater than the specified carousel size(config). Only one item at time is buffered, this happens when the index of the up front item is changed while dragging.
 
 3. Different carousel sizes / different views:
 	- 1, 2 items: flat display at center.
