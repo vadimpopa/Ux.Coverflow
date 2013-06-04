@@ -1,14 +1,16 @@
 Ux.Coverflow
 ============
 
-Infinite, buffered, circular(cylinder) Coverflow in Sencha Touch 2.2. Work in progress.
+Infinite, buffered, circular(cylinder) Coverflow in Sencha Touch 2.2.
+
+Work in progress.
 
 Demo: https://rawgithub.com/vadimpopa/Ux.Coverflow/master/index.html
 
 Features:
 
 1. Infinite:
-	There aren't any limits in dragging, starts from begging if all were shown.
+	There aren't any limits in dragging, starts from beginning if all were shown.
 
 2. Buffering:
 	If total number of items to show is greater then the specified carousel size(config) then buffering is eanbled. Only one item at time is buffered, this happens when the index of up front item is changed while dragging.
