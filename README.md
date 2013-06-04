@@ -15,8 +15,8 @@ Features:
 
 3. Different carousel sizes / different views:
 	- 1, 2 items: flat display at center.
-	- 3 items: coverflow mode, dragging disabled.
-	- More then 3:
+	- 3 items: coverflow mode, dragging is disabled.
+	- More than 3:
 		- exandAdjacent(true): after drag, previous and next items are expanded to show more to user. Expand is allowed only if the screen width is enough to fit the coverflow, thus previous and next items can be seen entirely.
 		- exandAdjacent(false): after drag, previous and next items are not expanded, the circularity of the coverflow is preserved. Coverflow may be in this mode when there are more than 10 items to show.
   
