@@ -1,0 +1,29 @@
+// The following two lines import the default Sencha Touch theme. If you are building
+// a new theme, remove them and the add your own CSS on top of the base CSS (which
+// is already included in your app.json file).
+
+@import 'sencha-touch/default';
+@import 'sencha-touch/default/all';
+
+// Custom code goes here..
+
+// Examples of using the icon mixin:
+// @include icon('user');
+
+@import 'stylesheets/coverflow';
+
+.cover-item {
+	span {
+		display: block;
+		font-size: 17px;
+		width: 100%;
+		text-align: center;
+	}
+
+	img {
+		width: 100%;
+		height: 91%;
+		border-radius: 5px;
+		-webkit-box-shadow: 0px 0px 1px 1px rgba(0,0,0,0.49);
+	}
+}

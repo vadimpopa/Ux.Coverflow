@@ -1,0 +1,58 @@
+@import 'compass/css3';
+
+/**
+ * @global {color} [$cover-bg-color=#333]
+ * Background-color for cover.
+ *
+ * @class Ux.Cover
+ * @xtype cover
+ */
+$cover-bg-color: #333 !default;
+
+/**
+ * @global {color} [$cover-text-color=#fff]
+ * Text color
+ *
+ * @class Ux.Cover
+ * @xtype cover
+ */
+$cover-text-color: #fff;
+
+.ux-cover {
+	background-color: $cover-bg-color;
+	color: $cover-text-color;
+    position: relative;
+	overflow: hidden;
+	@include display-box;
+	@include perspective(1000);
+	
+	-webkit-touch-callout: none;
+    -webkit-text-size-adjust: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+	.ux-cover-container {
+		@include transition-duration(1s);
+		@include transition-timing-function(easy-out);
+		@include transition-property(-webkit-transform);
+		@include transform-style(preserve-3d);
+		
+		.ux-cover-item {
+			@include transition-duration(0.5s);
+			@include transition-timing-function(easy-out);
+			position: absolute;
+			overflow: hidden;
+			width: inherit;
+			height: inherit;
+			-webkit-backface-visibility : hidden;
+		}
+
+	}
+
+	.ux-cover-inner {
+		// Add this to parent transfrom element to enable events on items.
+		-webkit-perspective: 1000px;
+		@include box-align(center); 
+		@include box-pack(center);
+		@include display-box;
+	}
+}
