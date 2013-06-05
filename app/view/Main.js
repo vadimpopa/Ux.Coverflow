@@ -45,6 +45,27 @@ Ext.define('Cover.view.Main', {
                             cover.setExpandedAdjacent(true);
                         }
                     }
+                },{
+                    text: 'Add item',
+                    handler: function(btn){
+                        var cover = btn.up('toolbar').parent.down('coverflow');
+                    }
+                },{
+                    xtype: 'sliderfield',
+                    label: 'size 7',
+                    value: 7,
+                    increment: 1,
+                    minValue: 1,
+                    maxValue: 12,
+                    listeners: {
+                        'change': function(me, sl, thumb, newValue) {
+                            var cover = me.up('toolbar').parent.down('coverflow');
+                            cover.setCarouselSize(newValue);
+                        },
+                        drag : function(me, sl, thumb){
+                            me.setLabel('size ' + sl.getValue()[0]);    
+                        }
+                    }
                 }]
             },
             {

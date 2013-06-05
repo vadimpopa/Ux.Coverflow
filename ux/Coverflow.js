@@ -55,7 +55,12 @@ Ext.define('Ux.Coverflow',{
          * displayed in a loading div and the view's contents will be cleared while loading, otherwise the view's
          * contents will continue to display normally until the new data is loaded and the contents are replaced.
          */
-        loadingText: 'Loading...'
+        loadingText: 'Loading...',
+
+        /**
+         * @private
+         */
+        carouselSize: 7
     },
     /**
      * @private
@@ -72,11 +77,6 @@ Ext.define('Ux.Coverflow',{
      * @private
      */
     lastFrontIdx: 0,
-
-    /**
-     * @private
-     */
-    carouselSize: 7,
 
     /**
      * @private
@@ -98,7 +98,7 @@ Ext.define('Ux.Coverflow',{
 
         me.getInnerHtmlElement().setVisibilityMode(this.element.VISIBILITY).setVisible(false);
 
-        me.readIdx =  Math.round(me.carouselSize/2)-1;
+        me.readIdx =  Math.round(me.getCarouselSize()/2)-1;
 
         if (me.getStore()) {
             if (me.isPainted()) {
@@ -151,6 +151,9 @@ Ext.define('Ux.Coverflow',{
     updateExpandedAdjacent: function(expanded) {
         if(this.isPainted())
             expanded ? this.expandAdjacent() :  this.collapseAdjacent();
+    },
+    updateCarouselSize: function(value){
+        this.doRefresh();
     },
 
     updateStore: function(newStore, oldStore) {
@@ -316,11 +319,11 @@ Ext.define('Ux.Coverflow',{
             this.setExpandedAdjacent();
     },
     doRefresh: function() {
-        //this.onStoreClear();
+        this.onStoreClear();
 
         var me = this,
             i=0,
-            carouselSize = me.carouselSize,
+            carouselSize = me.getCarouselSize(),
             records = this.getStore().getRange(),
             totalCount = records.length,
             innerHtmlElement = this.getInnerHtmlElement(),
@@ -330,10 +333,10 @@ Ext.define('Ux.Coverflow',{
 
         // Adjust coverflow to server response.
         if(totalCount > 0){
-            if(me.carouselSize > totalCount)
-                me.carouselSize = totalCount;
+            if(carouselSize > totalCount)
+                carouselSize = totalCount;
             else{
-                if(me.carouselSize > 10)
+                if(carouselSize > 10)
                     me.setExpandAdjacent(false);
             }
             
@@ -352,13 +355,13 @@ Ext.define('Ux.Coverflow',{
                 }
 
                 l = totalCount;
-                i = totalCount - (me.carouselSize - data.length);
+                i = totalCount - (carouselSize - data.length);
 
                 for(; i < l; i++){
                     pushData(records[i]);                
                 }                
                 
-                me.needsBuffering = totalCount > this.carouselSize ? true : false;
+                me.needsBuffering = totalCount > carouselSize ? true : false;
 
                 //Append drag listeners to the root element to have more space for dragging
                 me.element.on({
@@ -381,6 +384,8 @@ Ext.define('Ux.Coverflow',{
             setTimeout(function(){
                 innerHtmlElement.setVisible(true);
             },500);
+
+            me._carouselSize = carouselSize;
         }
     },
     /**
@@ -391,17 +396,21 @@ Ext.define('Ux.Coverflow',{
         this.setMasked(false);
     },
     checkFrontIdx: function(idx){
-        idx = idx%this.carouselSize;
+        idx = idx%this.getCarouselSize();
 
         if(idx > 0){
-            idx = this.carouselSize - idx;
+            idx = this.getCarouselSize() - idx;
         }else{
             idx = Math.abs(idx);
         }
         return idx;
     },
     getViewItems: function() {
-        return Array.prototype.slice.call(this.innerHtmlElement.dom.childNodes);
+        var innerHtmlElement =  this.innerHtmlElement;
+        if(innerHtmlElement && innerHtmlElement.dom)
+            return Array.prototype.slice.call(this.innerHtmlElement.dom.childNodes);
+        else
+            return [];
     },
     doInitialTransform: function(){
         var me = this,
@@ -455,7 +464,7 @@ Ext.define('Ux.Coverflow',{
             store = me.getStore(),
             totalCount =  store.getCount(),
             readIdx = me.readIdx,
-            lastItemIdx = me.carouselSize-1,
+            lastItemIdx = me.getCarouselSize()-1,
             item,record,updateIdx;
 
         if(direction === 1){
@@ -520,7 +529,7 @@ Ext.define('Ux.Coverflow',{
 
         var data = record.getData(true);
 
-        data.xcount = me.carouselSize;
+        data.xcount = me.getCarouselSize();
         data.index = updateIdx;
         data.storeIdx = readIdx;
 

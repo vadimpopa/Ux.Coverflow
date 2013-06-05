@@ -3,7 +3,7 @@ Ux.Coverflow
 
 Infinite, buffered, circular(cylinder) Coverflow in Sencha Touch 2.2.
 
-Work in progress.
+Work in progress. No license, you are free to use it. If it helped you, just star it.
 
 Demo: https://rawgithub.com/vadimpopa/Ux.Coverflow/master/index.html
 
@@ -26,4 +26,6 @@ Works on Sencha Touch 2.2.0 & 2.2.1.
 Tablets only.
 
 Some math based on: http://desandro.github.io/3dtransforms/docs/carousel.html.
+
+
 
