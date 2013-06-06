@@ -169,6 +169,7 @@ Ext.define('Ux.Coverflow',{
         this.readIdx =  Math.round(value/2)-1;
         this.rotation = 0;
         this.lastFrontIdx = 0;
+        this.updateIdx = undefined;
         this._expandedAdjacent = false;
         this.setPreventAdjacentExpand(config.preventAdjacentExpand);
     },
