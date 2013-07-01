@@ -248,19 +248,6 @@ Ext.define('Ux.Coverflow',{
      * @private
      */
     onLoad: function(store,records){
-        var me = this,
-            config = me.getInitialConfig();
-
-        // Reset coverflow params
-        me.setCarouselSize(config.carouselSize);
-        me.readIdx =  Math.round(config.carouselSize/2)-1;
-        me.rotation = 0;
-        me.lastFrontIdx = 0;
-        me.updateIdx = undefined;
-        me._expandedAdjacent = false;
-        me.setPreventAdjacentExpand(config.preventAdjacentExpand);
-
-
         this.doRefresh();
         this.setMasked(false);
     },  
@@ -341,7 +328,9 @@ Ext.define('Ux.Coverflow',{
      * @private
      */
     onStoreClear: function() {
-        var items = this.getViewItems(),
+        var me = this,
+            config = me.getInitialConfig(),
+            items = me.getViewItems(),
             i = 0,
             l = items.length;
 
@@ -350,7 +339,16 @@ Ext.define('Ux.Coverflow',{
         }
 
         //Clear also drag listeners because there may be the case that won't be needed, see doRefresh.
-        this.element.clearListeners();
+        me.element.clearListeners();
+        
+        // Reset coverflow params
+        me.setCarouselSize(config.carouselSize);
+        me.readIdx =  Math.round(config.carouselSize/2)-1;
+        me.rotation = 0;
+        me.lastFrontIdx = 0;
+        me.updateIdx = undefined;
+        me._expandedAdjacent = false;
+        me.setPreventAdjacentExpand(config.preventAdjacentExpand);
     },
     /**
      * @private
@@ -370,6 +368,7 @@ Ext.define('Ux.Coverflow',{
             l,pushData;
 
         innerHtmlElement.setVisible(false);
+        
         me.onStoreClear();
 
         // Adjust coverflow to server response.
