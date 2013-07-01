@@ -28,6 +28,8 @@ Ext.define('Ux.Coverflow',{
          * @private
          */
         styleHtmlContent: true,
+
+        loadingText: 'Loading',
  
         /**
          * @private
@@ -48,14 +50,6 @@ Ext.define('Ux.Coverflow',{
         itemHeight: 300,
 
         itemTpl: null,
-
-        /**
-         * @cfg {String} loadingText
-         * A string to display during data load operations.  If specified, this text will be
-         * displayed in a loading div and the view's contents will be cleared while loading, otherwise the view's
-         * contents will continue to display normally until the new data is loaded and the contents are replaced.
-         */
-        loadingText: 'Loading...',
 
         /**
          * @private
@@ -142,9 +136,6 @@ Ext.define('Ux.Coverflow',{
             oldExpandedAdjacent = me._expandedAdjacent;
 
         if(!me.getPreventAdjacentExpand()){
-            if(me.element.getWidth() < me.minVisibleWidth){
-                return false;
-            } 
             return expanded === false ? expanded : true;
         }
 
@@ -159,19 +150,6 @@ Ext.define('Ux.Coverflow',{
     updateExpandedAdjacent: function(expanded) {
         if(this.isPainted())
             expanded ? this.expandAdjacent() :  this.collapseAdjacent();
-    },
-    /**
-     * @private
-     */
-    updateCarouselSize: function(value){
-        var config = this.getInitialConfig();
-
-        this.readIdx =  Math.round(value/2)-1;
-        this.rotation = 0;
-        this.lastFrontIdx = 0;
-        this.updateIdx = undefined;
-        this._expandedAdjacent = false;
-        this.setPreventAdjacentExpand(config.preventAdjacentExpand);
     },
     /**
      * @private
@@ -260,9 +238,9 @@ Ext.define('Ux.Coverflow',{
             });
         }
 
-        if(items.length > 0){
+        /*if(items.length > 0){
             this.innerHtmlElement.destroy();
-        }
+        }*/
 
         //this.hideEmptyText();
     },
@@ -270,6 +248,19 @@ Ext.define('Ux.Coverflow',{
      * @private
      */
     onLoad: function(store,records){
+        var me = this,
+            config = me.getInitialConfig();
+
+        // Reset coverflow params
+        me.setCarouselSize(config.carouselSize);
+        me.readIdx =  Math.round(config.carouselSize/2)-1;
+        me.rotation = 0;
+        me.lastFrontIdx = 0;
+        me.updateIdx = undefined;
+        me._expandedAdjacent = false;
+        me.setPreventAdjacentExpand(config.preventAdjacentExpand);
+
+
         this.doRefresh();
         this.setMasked(false);
     },  
@@ -280,7 +271,7 @@ Ext.define('Ux.Coverflow',{
         this.innerHtmlElement.setStyle({
             "-webkit-transition-duration" : "0s",
             "transition-duration" : "0s",
-            "-webkit-timing-function": " ",
+            "-webkit-timing-function": " "
         });
 
         this.setExpandedAdjacent(false);
@@ -376,7 +367,7 @@ Ext.define('Ux.Coverflow',{
             totalCount = records.length,
             innerHtmlElement = this.getInnerHtmlElement(),
             data=[],
-            l;
+            l,pushData;
 
         innerHtmlElement.setVisible(false);
         me.onStoreClear();
@@ -393,11 +384,11 @@ Ext.define('Ux.Coverflow',{
                 }
             }
             
-            function pushData(rec){
+             pushData = function(rec){
                 var recData = rec.getData(true);
                 recData.storeIdx = i;
                 data.push(recData);
-            }
+            };
 
             if(totalCount >= 3) {
 
@@ -438,7 +429,7 @@ Ext.define('Ux.Coverflow',{
                 innerHtmlElement.setVisible(true);
             },300);
 
-            me._carouselSize = carouselSize;
+            me.setCarouselSize(carouselSize);
         }
     },
     /**
@@ -476,9 +467,7 @@ Ext.define('Ux.Coverflow',{
                 var c = Math.sin(angle*radiansCoef)*itemWidth/2,
                     ip = Math.cos((180-angle)/2*radiansCoef)*2*me.radius;
 
-                me.expandX = itemWidth - Math.sqrt(ip*ip-c*c) + 5;
-
-                me.minVisibleWidth = me.expandX*2 + itemWidth;
+                me.expandX = itemWidth - Math.sqrt(ip*ip-c*c);
 
                 me.setExpandedAdjacent(true);
             }
@@ -651,7 +640,7 @@ Ext.define('Ux.Coverflow',{
                 next = items[0];
             }
 
-            angle = me.theta*(lastFrontIdx-0.3)
+            angle = me.theta*(lastFrontIdx-0.3);
 
             Ext.get(prev || items[lastFrontIdx - 1]).setStyle(
                "webkitTransform", 'rotateY(' + angle + 'deg)' + 'translateZ(' + me.radius + 'px)'+'translateX(-'+me.expandX+'px)'
